@@ -217,6 +217,31 @@ describe('Calculator', () => {
             });
         });
     });
+
+    describe('funny cases', () => {
+
+        // test('reduce oxygen level', () => {
+        //     const result: EanResult = calculate({
+        //         pressureBar: 50,
+        //         oxygenPercentage: 40
+        //     }, {
+        //         pressureBar: 50,
+        //         oxygenPercentage: 60
+        //     }, {
+        //         oxygenPercentage: 100
+        //     });
+
+        //     verify(result, {
+        //         releaseBar: 45.2542372881,
+        //         releaseBarToTarget: 4.7457627119,
+        //         addBarEanSource: 0,
+        //         addBarEanSourceToTarget: 4.7457627119,
+        //         addBarAir: 65.2542372881,
+        //         addBarAirToTarget: 70
+        //     });
+        // });
+    });
+
 // TODO same pres. other level
 
 });

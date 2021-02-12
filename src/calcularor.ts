@@ -28,16 +28,71 @@ interface MixCalculationOutput {
     pressureToAddSource1Bar: number;
     pressureToAddSource2Bar: number;
 }
+type Calculator = (tankBefore: EanTank, tankAfter: EanTank, source: EanSource) => EanResult;
 
 const OXYGEN_PERCENTAGE_AIR = 21;
 const ALOMST_ZERO_NEGETIVE = -0.000001;
 
+const calcualtionStrategies: Calculator[] = [
+    nothingToDoCase, // before the 1st strategy, check nothing to do
+    calculateWithReleaseGasAndAddAir, // 1st prio: no need to add expensive EAN
+    calculateWithMixOfEanAndAir, // most common case: mix EAN and air
+    calculateWithReleaseGasAndAddEan // release gas and add EAN
+
+]
 
 export function calculate(tankBefore: EanTank, tankAfter: EanTank, source: EanSource): EanResult {
 
-    if(isNothingToDoCase(tankBefore, tankAfter)) {
-        return calculateNothingToDoCase(tankBefore);
+    for(const strategy of calcualtionStrategies) {
+        const result = strategy(tankBefore, tankAfter, source);
+        if(isValid(result)) {
+            return result;
+        }
     }
+    throw Error ('CANNOT_GET_CREATED');
+}
+
+function nothingToDoCase(tankBefore: EanTank, tankAfter: EanTank, source: EanSource): EanResult {
+    if(tankBefore.pressureBar === tankAfter.pressureBar && tankBefore.oxygenPercentage === tankAfter.oxygenPercentage) {
+        return {
+            releaseBar: 0,
+            releaseBarToTarget: tankBefore.pressureBar,
+            addBarEanSource: 0,
+            addBarEanSourceToTarget: tankBefore.pressureBar,
+            addBarAir: 0,
+            addBarAirToTarget: tankBefore.pressureBar
+        };
+    } else {
+        return {
+            releaseBar: -1,
+            releaseBarToTarget: -1,
+            addBarEanSource: 1,
+            addBarEanSourceToTarget: -1,
+            addBarAir: 1,
+            addBarAirToTarget: -1
+        };
+    }
+}
+
+function calculateWithReleaseGasAndAddAir(tankBefore: EanTank, tankAfter: EanTank, source: EanSource): EanResult {
+    const mix: MixCalculationOutput = calculatePressureToAdd({
+        pressureTargetBar: tankAfter.pressureBar,
+        oxygenPercentageTarget: tankAfter.oxygenPercentage,
+        oxygenPercentageSource1: tankBefore.oxygenPercentage,
+        oxygenPercentageSource2: OXYGEN_PERCENTAGE_AIR
+    });
+
+    return {
+        releaseBar: tankBefore.pressureBar - mix.pressureToAddSource1Bar,
+        releaseBarToTarget: mix.pressureToAddSource1Bar, 
+        addBarEanSource: 0,
+        addBarEanSourceToTarget: mix.pressureToAddSource1Bar,
+        addBarAir: mix.pressureToAddSource2Bar,
+        addBarAirToTarget: mix.pressureToAddSource1Bar + mix.pressureToAddSource2Bar
+    }
+}
+
+function calculateWithMixOfEanAndAir(tankBefore: EanTank, tankAfter: EanTank, source: EanSource): EanResult {
     const partialPressureOxygenBefore = tankBefore.oxygenPercentage / 100 * tankBefore.pressureBar;
     const partialPressureOxygenAfter = tankAfter.oxygenPercentage / 100 * tankAfter.pressureBar;
 
@@ -52,26 +107,14 @@ export function calculate(tankBefore: EanTank, tankAfter: EanTank, source: EanSo
         oxygenPercentageSource2: OXYGEN_PERCENTAGE_AIR
     });
 
-    if(isNeedToReleaseGas(mix)) {
-        if(tankBefore.oxygenPercentage < tankAfter.oxygenPercentage) {
-            return checkPossible(calculateWithReleaseGasAndAddEan(tankBefore, tankAfter, source));
-        } else {
-            return checkPossible(calculateWithReleaseGasAndAddAir(tankBefore, tankAfter));
-        }
-    }
-
-    return checkPossible({
+    return {
         releaseBar: 0,
         releaseBarToTarget: tankBefore.pressureBar,
         addBarEanSource: mix.pressureToAddSource1Bar,
         addBarEanSourceToTarget: tankBefore.pressureBar + mix.pressureToAddSource1Bar,
         addBarAir: mix.pressureToAddSource2Bar,
         addBarAirToTarget: tankBefore.pressureBar + mix.pressureToAddSource1Bar + mix.pressureToAddSource2Bar
-    });
-}
-
-function isNeedToReleaseGas(mix: MixCalculationOutput) {
-    return mix.pressureToAddSource1Bar < ALOMST_ZERO_NEGETIVE || mix.pressureToAddSource2Bar < ALOMST_ZERO_NEGETIVE;
+    };
 }
 
 function calculateWithReleaseGasAndAddEan(tankBefore: EanTank, tankAfter: EanTank, source: EanSource): EanResult {
@@ -92,24 +135,6 @@ function calculateWithReleaseGasAndAddEan(tankBefore: EanTank, tankAfter: EanTan
     }
 }
 
-function calculateWithReleaseGasAndAddAir(tankBefore: EanTank, tankAfter: EanTank): EanResult {
-    const mix: MixCalculationOutput = calculatePressureToAdd({
-        pressureTargetBar: tankAfter.pressureBar,
-        oxygenPercentageTarget: tankAfter.oxygenPercentage,
-        oxygenPercentageSource1: tankBefore.oxygenPercentage,
-        oxygenPercentageSource2: OXYGEN_PERCENTAGE_AIR
-    });
-
-    return {
-        releaseBar: tankBefore.pressureBar - mix.pressureToAddSource1Bar,
-        releaseBarToTarget: mix.pressureToAddSource1Bar, 
-        addBarEanSource: 0,
-        addBarEanSourceToTarget: mix.pressureToAddSource1Bar,
-        addBarAir: mix.pressureToAddSource2Bar,
-        addBarAirToTarget: mix.pressureToAddSource1Bar + mix.pressureToAddSource2Bar
-    }
-}
-
 function calculatePressureToAdd(input: MixCalculationInput): MixCalculationOutput {
     const pressureToAddSource1Bar = input.pressureTargetBar
         * (input.oxygenPercentageTarget - input.oxygenPercentageSource2)
@@ -121,24 +146,7 @@ function calculatePressureToAdd(input: MixCalculationInput): MixCalculationOutpu
     }
 }
 
-function isNothingToDoCase(tankBefore: EanTank, tankAfter: EanTank): boolean{
-    return tankBefore.pressureBar === tankAfter.pressureBar && tankBefore.oxygenPercentage === tankAfter.oxygenPercentage;
-}
-
-function calculateNothingToDoCase(tankBefore: EanTank): EanResult{
-    return {
-        releaseBar: 0,
-        releaseBarToTarget: tankBefore.pressureBar,
-        addBarEanSource: 0,
-        addBarEanSourceToTarget: tankBefore.pressureBar,
-        addBarAir: 0,
-        addBarAirToTarget: tankBefore.pressureBar
-    };
-}
-
-function checkPossible(result: EanResult): EanResult {
-    if(result.releaseBarToTarget < ALOMST_ZERO_NEGETIVE || result.addBarEanSource < ALOMST_ZERO_NEGETIVE || result.addBarAirToTarget < ALOMST_ZERO_NEGETIVE) {
-        throw Error ('CANNOT_GET_CREATED');
-    }
-    return result;
+function isValid(result: EanResult) {
+    return !(result.releaseBar < ALOMST_ZERO_NEGETIVE || result.addBarEanSource < ALOMST_ZERO_NEGETIVE || result.addBarAir < ALOMST_ZERO_NEGETIVE)
+    && Number.isFinite(result.addBarEanSource) && Number.isFinite(result.addBarAir)
 }
