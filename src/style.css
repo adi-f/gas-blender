@@ -1,0 +1,16 @@
+body{
+    font-family: "Sans";
+  }
+  
+  label {
+      width: 10em;
+      display: inline-block;
+  }
+  
+  [readonly] {
+    background-color: lime;
+  }
+  
+  input {
+    width: 18em;
+  }
