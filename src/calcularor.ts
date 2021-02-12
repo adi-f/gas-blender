@@ -55,7 +55,7 @@ export function calculate(tankBefore: EanTank, tankAfter: EanTank, source: EanSo
 
 function calculatePreasureToAdd(input: MixCalculationInput): MixCalculationOutput {
     const pressureToAddSource1Bar = input.pressureTargetBar
-        * (input.oxygenPercentagetarget - input.oxygenPercentageSource1)
+        * (input.oxygenPercentagetarget - input.oxygenPercentageSource2)
         / (input.oxygenPercentageSource1 - input.oxygenPercentageSource2);
 
     return {
