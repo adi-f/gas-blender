@@ -25,7 +25,7 @@ interface MixCalculationInput {
 
 interface MixCalculationOutput {
     pressureToAddSource1Bar: number;
-    preasureToAddSource2Bar: number;
+    pressureToAddSource2Bar: number;
 }
 
 export function calculate(tankBefore: EanTank, tankAfter: EanTank, source: EanSource): EanResult {
@@ -37,7 +37,7 @@ export function calculate(tankBefore: EanTank, tankAfter: EanTank, source: EanSo
     const preassureTotalToAdd = tankAfter.pressureBar - tankBefore.pressureBar
     const partialPressureOxygenAdd = partialPressureOxygenAfter - partialPressureOxygenBefore;
 
-    const mix: MixCalculationOutput = calculatePreasureToAdd({
+    const mix: MixCalculationOutput = calculatePressureToAdd({
         pressureTargetBar: preassureTotalToAdd,
         oxygenPercentagetarget: partialPressureOxygenAdd,
         oxygenPercentageSource1: source.oxygenPercentage,
@@ -48,18 +48,18 @@ export function calculate(tankBefore: EanTank, tankAfter: EanTank, source: EanSo
         releaseBar: 0,
         addBarEanSource: mix.pressureToAddSource1Bar,
         addBarEanSourceToTarget: tankBefore.pressureBar + mix.pressureToAddSource1Bar,
-        addBarAir: mix.preasureToAddSource2Bar,
-        addBarAirToTarget: tankBefore.pressureBar + mix.pressureToAddSource1Bar + mix.preasureToAddSource2Bar
+        addBarAir: mix.pressureToAddSource2Bar,
+        addBarAirToTarget: tankBefore.pressureBar + mix.pressureToAddSource1Bar + mix.pressureToAddSource2Bar
     }
 }
 
-function calculatePreasureToAdd(input: MixCalculationInput): MixCalculationOutput {
+function calculatePressureToAdd(input: MixCalculationInput): MixCalculationOutput {
     const pressureToAddSource1Bar = input.pressureTargetBar
         * (input.oxygenPercentagetarget - input.oxygenPercentageSource2)
         / (input.oxygenPercentageSource1 - input.oxygenPercentageSource2);
 
     return {
         pressureToAddSource1Bar,
-        preasureToAddSource2Bar: input.pressureTargetBar - pressureToAddSource1Bar
+        pressureToAddSource2Bar: input.pressureTargetBar - pressureToAddSource1Bar
     }
 }
