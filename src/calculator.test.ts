@@ -17,6 +17,7 @@ describe('Calculator', () => {
 
             verify(result, {
                 releaseBar: 0,
+                releaseBarToTarget: 100,
                 addBarEanSource: 0,
                 addBarEanSourceToTarget: 100,
                 addBarAir: 100,
@@ -37,6 +38,7 @@ describe('Calculator', () => {
 
             verify(result, {
                 releaseBar: 0,
+                releaseBarToTarget: 110,
                 addBarEanSource: 0,
                 addBarEanSourceToTarget: 110,
                 addBarAir: 0,
@@ -57,6 +59,7 @@ describe('Calculator', () => {
 
             verify(result, {
                 releaseBar: 0,
+                releaseBarToTarget: 40,
                 addBarEanSource: 10,
                 addBarEanSourceToTarget: 50,
                 addBarAir: 0,
@@ -77,6 +80,7 @@ describe('Calculator', () => {
 
             verify(result, {
                 releaseBar: 0,
+                releaseBarToTarget: 50,
                 addBarEanSource: 67.721518987,
                 addBarEanSourceToTarget: 117.721518987,
                 addBarAir: 82.278481012,
@@ -97,13 +101,123 @@ describe('Calculator', () => {
 
             verify(result, {
                 releaseBar: 0,
+                releaseBarToTarget: 60,
                 addBarEanSource: 74.2857142857,
                 addBarEanSourceToTarget: 134.2857142857,
                 addBarAir: 85.7142857143,
                 addBarAirToTarget: 220
             });
         });
+
+        test('redce oxygen level', () => {
+            const result: EanResult = calculate({
+                pressureBar: 100,
+                oxygenPercentage: 80
+            }, {
+                pressureBar: 200,
+                oxygenPercentage: 70
+            }, {
+                oxygenPercentage: 90
+            });
+
+            verify(result, {
+                releaseBar: 0,
+                releaseBarToTarget: 100,
+                addBarEanSource: 56.521739130,
+                addBarEanSourceToTarget: 156.521739130,
+                addBarAir: 43.47826087,
+                addBarAirToTarget: 200
+            });
+        });
     });
+
+    describe('need to release gas first', () => {
+        test('cannt be achived with mix; release all', () => {
+            const result: EanResult = calculate({
+                pressureBar: 40,
+                oxygenPercentage: 25
+            }, {
+                pressureBar: 50,
+                oxygenPercentage: 90
+            }, {
+                oxygenPercentage: 90
+            });
+
+            verify(result, {
+                releaseBar: 40,
+                releaseBarToTarget: 0,
+                addBarEanSource: 50,
+                addBarEanSourceToTarget: 50,
+                addBarAir: 0,
+                addBarAirToTarget: 50
+            });
+        });
+
+        test('cannot be achived with pure O2; release', () => {
+            const result: EanResult = calculate({
+                pressureBar: 40,
+                oxygenPercentage: 25
+            }, {
+                pressureBar: 50,
+                oxygenPercentage: 60
+            }, {
+                oxygenPercentage: 80
+            });
+
+            verify(result, {
+                releaseBar: 21.8181818182,
+                releaseBarToTarget: 18.1818181818,
+                addBarEanSource: 31.8181818182,
+                addBarEanSourceToTarget: 50,
+                addBarAir: 0,
+                addBarAirToTarget: 50
+            });
+        });
+
+
+        test('reduce oxygen level (release all)', () => {
+            const result: EanResult = calculate({
+                pressureBar: 50,
+                oxygenPercentage: 80
+            }, {
+                pressureBar: 70,
+                oxygenPercentage: 21
+            }, {
+                oxygenPercentage: 100
+            });
+
+            verify(result, {
+                releaseBar: 50,
+                releaseBarToTarget: 0,
+                addBarEanSource: 0,
+                addBarEanSourceToTarget: 0,
+                addBarAir: 70,
+                addBarAirToTarget: 70
+            });
+        });
+
+        test('reduce oxygen level', () => {
+            const result: EanResult = calculate({
+                pressureBar: 50,
+                oxygenPercentage: 80
+            }, {
+                pressureBar: 70,
+                oxygenPercentage: 25
+            }, {
+                oxygenPercentage: 100
+            });
+
+            verify(result, {
+                releaseBar: 45.2542372881,
+                releaseBarToTarget: 4.7457627119,
+                addBarEanSource: 0,
+                addBarEanSourceToTarget: 4.7457627119,
+                addBarAir: 65.2542372881,
+                addBarAirToTarget: 70
+            });
+        });
+    });
+// TODO same pres. other level
 
 });
 
@@ -115,8 +229,8 @@ function verify(actual: EanResult, expected: EanResult): void {
     expect(actual.addBarAir).toBeCloseTo(expected.addBarAir);
     expect(actual.addBarAirToTarget).toBeCloseTo(expected.addBarAirToTarget);
 
-    expect(actual.addBarEanSourceToTarget + actual.addBarAir).toBeCloseTo(expected.addBarAirToTarget);
-    
+    expect(actual.releaseBarToTarget + actual.addBarEanSource + actual.addBarAir).toBeCloseTo(expected.addBarAirToTarget);
+
     } catch(e) {
         const message = `\nactual  : ${JSON.stringify(actual)}\nexpected: ${JSON.stringify(expected)}`
         fail(message);
