@@ -18,7 +18,7 @@ export interface EanSource {
 
 interface MixCalculationInput {
     pressureTargetBar: number;
-    oxygenPercentagetarget: number;
+    oxygenPercentageTarget: number;
     oxygenPercentageSource1: number;
     oxygenPercentageSource2: number;
 }
@@ -29,6 +29,11 @@ interface MixCalculationOutput {
 }
 
 export function calculate(tankBefore: EanTank, tankAfter: EanTank, source: EanSource): EanResult {
+    
+    if(isNothingToDoCase(tankBefore, tankAfter)) {
+        return calculateNothingToDoCase(tankBefore);
+    }
+
     const oxygenPercentageAir = 21;
 
     const partialPressureOxygenBefore = tankBefore.oxygenPercentage / 100 * tankBefore.pressureBar;
@@ -36,10 +41,11 @@ export function calculate(tankBefore: EanTank, tankAfter: EanTank, source: EanSo
 
     const preassureTotalToAdd = tankAfter.pressureBar - tankBefore.pressureBar
     const partialPressureOxygenAdd = partialPressureOxygenAfter - partialPressureOxygenBefore;
+    const oxygenPercentageOfMixToAdd = partialPressureOxygenAdd / preassureTotalToAdd * 100;
 
     const mix: MixCalculationOutput = calculatePressureToAdd({
         pressureTargetBar: preassureTotalToAdd,
-        oxygenPercentagetarget: partialPressureOxygenAdd,
+        oxygenPercentageTarget: oxygenPercentageOfMixToAdd,
         oxygenPercentageSource1: source.oxygenPercentage,
         oxygenPercentageSource2: oxygenPercentageAir
     });
@@ -55,11 +61,25 @@ export function calculate(tankBefore: EanTank, tankAfter: EanTank, source: EanSo
 
 function calculatePressureToAdd(input: MixCalculationInput): MixCalculationOutput {
     const pressureToAddSource1Bar = input.pressureTargetBar
-        * (input.oxygenPercentagetarget - input.oxygenPercentageSource2)
+        * (input.oxygenPercentageTarget - input.oxygenPercentageSource2)
         / (input.oxygenPercentageSource1 - input.oxygenPercentageSource2);
 
     return {
         pressureToAddSource1Bar,
         pressureToAddSource2Bar: input.pressureTargetBar - pressureToAddSource1Bar
     }
+}
+
+function isNothingToDoCase(tankBefore: EanTank, tankAfter: EanTank): boolean{
+    return tankBefore.pressureBar === tankAfter.pressureBar && tankBefore.oxygenPercentage === tankAfter.oxygenPercentage;
+}
+
+function calculateNothingToDoCase(tankBefore: EanTank): EanResult{
+    return {
+        releaseBar: 0,
+        addBarEanSource: 0,
+        addBarEanSourceToTarget: tankBefore.pressureBar,
+        addBarAir: 0,
+        addBarAirToTarget: tankBefore.pressureBar
+    };
 }
