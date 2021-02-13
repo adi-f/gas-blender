@@ -14,3 +14,7 @@ body{
   input {
     width: 18em;
   }
+
+  .release, .booster, .compressor {
+    visibility: hidden;
+  }

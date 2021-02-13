@@ -3,25 +3,28 @@
 
 <body>
     <div>
-        <label>Druck Flasche (bar): </label> <input class="tankBeforePressure">
+        <label>Druck Flasche Anzeige Booster (bar): </label> <input class="tankPressureBeforeDesiplayed">
     </div>
     <div>
-        <label>O₂(%): </label> <input class="tankBeforOxygen">
+        <label>Druck Flasche (bar): </label> <input readonly class="tankPressureBefore">
     </div>
-
-    <hr>
-
     <div>
-        <label>O₂ Quelle(%): </label> <input class="sourceOxygen" value="100">
+        <label>O₂(%): </label> <input class="tankOxygenBefore">
     </div>
 
     <hr>
 
     <div>
-        <label>Zieldruck Flasche (bar): </label> <input class="tankAfterPressure" value="220">
+        <label>O₂ Quelle(%): </label> <input class="sourceOxygen">
+    </div>
+
+    <hr>
+
+    <div>
+        <label>Zieldruck Flasche (bar): </label> <input class="tankPressureTarget">
     </div>
     <div>
-        <label>Ziel-O₂(%): </label> <input class="tankAfterOxygen">
+        <label>Ziel-O₂(%): </label> <input class="tankOxygenTarget">
     </div>
 
     <hr>
@@ -32,11 +35,25 @@
 
     <hr>
 
-    <div>
-        <label>Booster: </label> <input class="addFromSource" readonly>
+    <div class="release">
+        <label>Lasse ab:</label> <input class="releaseFromTank" readonly>
     </div>
-    <div>
-        <label>Luft: </label> <input class="addAir" readonly>
+    <div class="important release">
+        <label>Lasse ab zu:</label> <input class="releaseFromTankTo" readonly>
+    </div>
+
+    <div class="booster">
+        <label>Booste:</label> <input class="addFromSource" readonly>
+    </div>
+    <div class="important booster">
+        <label>Booste zu (Anzeige):</label> <input class="addFromSourceTo" readonly>
+    </div>
+
+    <div class="compressor">
+        <label>Luft:</label> <input class="addAir" readonly>
+    </div>
+    <div class="important compressor">
+        <label>Luft zu:</label> <input class="addAirTo" readonly>
     </div>
 </body>
 
