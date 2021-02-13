@@ -10,7 +10,6 @@ export interface EanResult {
     addBarEanSourceToTarget: number;
     addBarAir: number;
     addBarAirToTarget: number;
-
 }
 
 export interface EanSource {
@@ -147,6 +146,6 @@ function calculatePressureToAdd(input: MixCalculationInput): MixCalculationOutpu
 }
 
 function isValid(result: EanResult) {
-    return !(result.releaseBar < ALOMST_ZERO_NEGETIVE || result.addBarEanSource < ALOMST_ZERO_NEGETIVE || result.addBarAir < ALOMST_ZERO_NEGETIVE)
+    return !(result.releaseBar < ALOMST_ZERO_NEGETIVE || result.releaseBarToTarget < ALOMST_ZERO_NEGETIVE || result.addBarEanSource < ALOMST_ZERO_NEGETIVE || result.addBarAir < ALOMST_ZERO_NEGETIVE)
     && Number.isFinite(result.addBarEanSource) && Number.isFinite(result.addBarAir)
 }

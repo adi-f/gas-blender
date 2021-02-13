@@ -220,30 +220,72 @@ describe('Calculator', () => {
 
     describe('funny cases', () => {
 
-        // test('reduce oxygen level', () => {
-        //     const result: EanResult = calculate({
-        //         pressureBar: 50,
-        //         oxygenPercentage: 40
-        //     }, {
-        //         pressureBar: 50,
-        //         oxygenPercentage: 60
-        //     }, {
-        //         oxygenPercentage: 100
-        //     });
+        test('boost oxygen level (keep presure)', () => {
+            const result: EanResult = calculate({
+                pressureBar: 50,
+                oxygenPercentage: 40
+            }, {
+                pressureBar: 50,
+                oxygenPercentage: 60
+            }, {
+                oxygenPercentage: 100
+            });
 
-        //     verify(result, {
-        //         releaseBar: 45.2542372881,
-        //         releaseBarToTarget: 4.7457627119,
-        //         addBarEanSource: 0,
-        //         addBarEanSourceToTarget: 4.7457627119,
-        //         addBarAir: 65.2542372881,
-        //         addBarAirToTarget: 70
-        //     });
-        // });
+            verify(result, {
+                releaseBar: 16.666666667,
+                releaseBarToTarget: 33.333333333,
+                addBarEanSource: 16.666666667,
+                addBarEanSourceToTarget: 50,
+                addBarAir: 0,
+                addBarAirToTarget: 50
+            });
+        });
+
+        test('reduce oxygen level (keep presure)', () => {
+            const result: EanResult = calculate({
+                pressureBar: 200,
+                oxygenPercentage: 40
+            }, {
+                pressureBar: 200,
+                oxygenPercentage: 30
+            }, {
+                oxygenPercentage: 10
+            });
+            // 2 solutions: works with add air or EAN10 (prefere cheeper/simpler air)
+            verify(result, {
+                releaseBar: 105.26315789473684,
+                releaseBarToTarget: 94.73684210526316,
+                addBarEanSource: 0,
+                addBarEanSourceToTarget: 94.73684210526316,
+                addBarAir: 105.26315789473684,
+                addBarAirToTarget: 200
+            });
+        });
+
+        test('cannot be mixed (too few O2 in source tank)', () => {
+            expect(() => calculate({
+                pressureBar: 50,
+                oxygenPercentage: 40
+            }, {
+                pressureBar: 200,
+                oxygenPercentage: 55
+            }, {
+                oxygenPercentage: 50
+            })).toThrowError('CANNOT_GET_CREATED');
+        });
+
+        test('cannot be mixed (too low O2 level as target)', () => {
+            expect(() => calculate({
+                pressureBar: 50,
+                oxygenPercentage: 21
+            }, {
+                pressureBar: 100,
+                oxygenPercentage: 15
+            }, {
+                oxygenPercentage: 18
+            })).toThrowError('CANNOT_GET_CREATED');
+        });
     });
-
-// TODO same pres. other level
-
 });
 
 function verify(actual: EanResult, expected: EanResult): void {
