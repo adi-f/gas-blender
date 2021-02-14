@@ -55,7 +55,7 @@ function displayResult(result: BlendResult) {
   const needToReleseGas = !isAlmostZero(result.releaseBar);
   setVisibility('.release', needToReleseGas);
   setInputValue('.releaseFromTank', '-' + format(result.releaseBar) + ' bar');
-  setInputValue('.releaseFromTankTo', format(result.releaseBarTo) + ' bar');
+  setInputValue('.releaseFromTankTo', format(result.releaseBarToDisplayBooster) + ' bar');
 
   const needToBoost = !isAlmostZero(result.addBarSource);
   setVisibility('.booster', needToBoost);
