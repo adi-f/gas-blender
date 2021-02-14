@@ -1,3 +1,11 @@
+type ErrorHandler = ((message: string) => never) & {print: (message: string) => void};
+
+export const error: ErrorHandler = (message: string) => {
+    error.print(message);
+    throw Error(message);
+}
+error.print = alert;
+
 export function toInt(num: string): number {
     const int = parseInt(num, 10);
     if (Number.isNaN(int)) {
@@ -6,10 +14,8 @@ export function toInt(num: string): number {
     return int;
 }
 
-export function error(message: string): never {
-    alert(message);
-    throw Error(message);
-}
+
+
 
 export function format(num: number): string {
     console.log(num);

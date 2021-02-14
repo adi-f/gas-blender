@@ -1,20 +1,57 @@
 body{
-    font-family: "Sans";
+    font-family: sans-serif;
+    background-color: black;
+    color: burlywood;
+    max-width: 28em;
   }
   
   label {
-      width: 10em;
+      width: 60%;
       display: inline-block;
+      margin-left: 3%;
   }
   
   [readonly] {
-    background-color: lime;
+    background-color:chocolate;
+  }
+
+  .important input {
+    background-color:indianred;
+    font-weight: bold;
+
   }
   
   input {
-    width: 18em;
+    margin: 2px;
+    width: 30%;
+    color: burlywood;
+    background-color: darkslategrey;
+    border: 2px solid burlywood;
+    border-radius: 3px;
+  }
+
+  button {
+    width: 93%;
+    background-color: burlywood;
+    border: 2px solid burlywood;
+    border-radius: 6px;
+    color: indianred;
+    font-weight: bold;
+    margin: 2px;
+    margin-left: 3%;
+    padding: 2px;
   }
 
   .release, .booster, .compressor {
     visibility: hidden;
+  }
+
+  .error {
+    display: none;
+    background-color: brown;
+    border: 2px solid red;
+    border-radius: 8px;
+    text-align: center;
+    padding-top: 1em;
+    padding-bottom: 1em;
   }

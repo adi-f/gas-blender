@@ -3,8 +3,11 @@ import { BlendResult, calculateForRemosEquiptment, COMPRESSOR_OUTPUT_200_BAR_STO
 import { error, format, isAlmostZero, toInt } from './ui-helper';
 
 export function init() {
-  setDefaults();
-  registerListerners();
+  error.print = showError;
+  setTimeout(() => { // wait for DOM
+    setDefaults();
+    registerListerners();
+  });
 }
 
 function updateTankPressure() {
@@ -51,19 +54,20 @@ function displayResultDeleyed(result: BlendResult) {
 function displayResult(result: BlendResult) {
   const needToReleseGas = !isAlmostZero(result.releaseBar);
   setVisibility('.release', needToReleseGas);
-  setInputValue('.releaseFromTank', format(result.releaseBar));
-  setInputValue('.releaseFromTankTo', format(result.releaseBarTo));
+  setInputValue('.releaseFromTank', '-' + format(result.releaseBar) + ' bar');
+  setInputValue('.releaseFromTankTo', format(result.releaseBarTo) + ' bar');
 
   const needToBoost = !isAlmostZero(result.addBarSource);
   setVisibility('.booster', needToBoost);
-  setInputValue('.addFromSource', format(result.addBarSource));
-  setInputValue('.addFromSourceTo', format(result.addBarSourceToDisplayBooster));
+  setInputValue('.addFromSource', '+' + format(result.addBarSource) + ' bar');
+  setInputValue('.addFromSourceTo', format(result.addBarSourceToDisplayBooster) + ' bar');
 
   const needCompressor = !isAlmostZero(result.addBarAir);
   setVisibility('.compressor', needCompressor);
-  setInputValue('.addAir', format(result.addBarAir));
-  setInputValue('.addAirTo', format(result.addBarAirToDisplayCompressor));
+  setInputValue('.addAir', '+' + format(result.addBarAir) + ' bar');
+  setInputValue('.addAirTo', format(result.addBarAirToDisplayCompressor) + ' bar');
 
+  hideError();
 }
 
 function registerListerners() {
@@ -74,7 +78,6 @@ function registerListerners() {
 function setDefaults() {
   setInputValue('.sourceOxygen', format(DEFAULT_SOURCE_OXYGEN_PERCENTAGE));
   setInputValue('.tankPressureTarget', format(COMPRESSOR_OUTPUT_200_BAR_STOPS_AT));
-
 }
 
 function getInputValueParsed(selector: string): number {
@@ -99,5 +102,16 @@ function addListener(selector: string, eventType: string, action: () => void) {
 
 function setVisibility(selector: string, visible: boolean) {
   const visibility = visible ? 'inherit' : 'hidden'
-  document.querySelectorAll(selector).forEach( (element: HTMLElement) => element.style.visibility = visibility)
+  document.querySelectorAll(selector).forEach((element: HTMLElement) => element.style.visibility = visibility)
+}
+
+function showError(message: string) {
+  const errorElement: HTMLElement = document.querySelector('.error');
+  errorElement.innerText = message;
+  errorElement.style.display = 'inherit';
+}
+
+function hideError() {
+  const errorElement: HTMLElement = document.querySelector('.error');
+  errorElement.style.display = 'none';
 }
