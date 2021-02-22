@@ -2,11 +2,11 @@ body{
     font-family: sans-serif;
     background-color: black;
     color: burlywood;
-    max-width: 28em;
+    max-width: 29em;
   }
   
   label {
-      width: 60%;
+      width: 18em;
       display: inline-block;
       margin-left: 3%;
   }
@@ -23,7 +23,7 @@ body{
   
   input {
     margin: 2px;
-    width: 30%;
+    width: 10em;
     color: burlywood;
     background-color: darkslategrey;
     border: 2px solid burlywood;

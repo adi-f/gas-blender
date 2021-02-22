@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
-
+<head><meta charset="utf-8"/></head>
 <body>
     <div>
         <label>Druck Flasche Anzeige Booster (bar): </label> <input class="tankPressureBeforeDesiplayed" type="number">
     </div>
     <div>
-        <label>Druck Flasche (bar): </label> <input readonly class="tankPressureBefore" type="number">
+        <label>Druck Flasche (bar): </label> <input readonly class="tankPressureBefore" type="number" tabindex="-1">
     </div>
     <div>
         <label>O₂(%): </label> <input class="tankOxygenBefore" type="number">
@@ -36,24 +36,24 @@
     <hr>
     <div class="error"></div>
     <div class="release">
-        <label>Lasse ab:</label> <input class="releaseFromTank" readonly>
+        <label>Lasse ab:</label> <input class="releaseFromTank" readonly tabindex="-1">
     </div>
     <div class="important release">
-        <label>Lasse ab zu (Anzeige Booster):</label> <input class="releaseFromTankTo" readonly>
+        <label>Lasse ab zu (Anzeige Booster):</label> <input class="releaseFromTankTo" readonly tabindex="-1">
     </div>
 
     <div class="booster">
-        <label>Booste:</label> <input class="addFromSource" readonly>
+        <label>Booste:</label> <input class="addFromSource" readonly> tabindex="-1"
     </div>
     <div class="important booster">
-        <label>Booste zu (Anzeige Booster):</label> <input class="addFromSourceTo" readonly>
+        <label>Booste zu (Anzeige Booster):</label> <input class="addFromSourceTo" readonly tabindex="-1">
     </div>
 
     <div class="compressor">
-        <label>Luft:</label> <input class="addAir" readonly>
+        <label>Luft:</label> <input class="addAir" readonly tabindex="-1">
     </div>
     <div class="important compressor">
-        <label>Luft zu:</label> <input class="addAirTo" readonly>
+        <label>Luft zu:</label> <input class="addAirTo" readonly tabindex="-1">
     </div>
 
     <hr>

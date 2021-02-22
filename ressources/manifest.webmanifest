@@ -1,0 +1,15 @@
+{
+    "short_name": "GasBlender",
+    "name": "Gas Blender Calculator",
+    "icons": [
+      {
+        "src": "logo512.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "/",
+    "background_color": "darkslategrey",
+    "theme_color": "darkslategrey",
+    "description": "Gas Blender Calculator"
+  }
