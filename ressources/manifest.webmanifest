@@ -9,6 +9,7 @@
       }
     ],
     "start_url": "/",
+    "display": "standalone",
     "background_color": "darkslategrey",
     "theme_color": "darkslategrey",
     "description": "Gas Blender Calculator"

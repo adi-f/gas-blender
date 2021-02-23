@@ -1,9 +1,10 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const HtmlInlineScriptPlugin = require('html-inline-script-webpack-plugin');
-const HTMLInlineCSSWebpackPlugin = require("html-inline-css-webpack-plugin").default;
+// const HtmlInlineScriptPlugin = require('html-inline-script-webpack-plugin');
+// const HTMLInlineCSSWebpackPlugin = require("html-inline-css-webpack-plugin").default;
 const CopyPlugin = require("copy-webpack-plugin");
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = {
   entry: './src/index.ts',
@@ -37,8 +38,12 @@ module.exports = {
         { from: "ressources/"}
       ],
     }),
-    new MiniCssExtractPlugin(),
-    new HtmlInlineScriptPlugin(),
-    new HTMLInlineCSSWebpackPlugin(),
+    new WorkboxPlugin.GenerateSW({
+      clientsClaim: true,
+      skipWaiting: true,
+    }),
+    // new MiniCssExtractPlugin(),
+    // new HtmlInlineScriptPlugin(),
+    // new HTMLInlineCSSWebpackPlugin(),
   ]
 };
