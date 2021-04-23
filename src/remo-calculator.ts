@@ -56,7 +56,7 @@ export function calculateForRemosEquiptment(input: BlendParameters): BlendResult
         releaseBarTo: result.releaseBarToTarget,
         releaseBarToDisplayBooster: pressureBarToDisplay(result.releaseBarToTarget),
         addBarSource: result.addBarEanSource,
-        addBarSourceToDisplayBooster: pressureBarToDisplay(result.addBarEanSource),
+        addBarSourceToDisplayBooster: pressureBarToDisplay(result.addBarEanSourceToTarget),
         addBarAir: result.addBarAir,
         addBarAirTo: result.addBarAirToTarget,
         addBarAirToDisplayCompressor: result.addBarAirToTarget

@@ -42,7 +42,7 @@ module.exports = {
       clientsClaim: true,
       skipWaiting: true,
     }),
-    // new MiniCssExtractPlugin(),
+    new MiniCssExtractPlugin(),
     // new HtmlInlineScriptPlugin(),
     // new HTMLInlineCSSWebpackPlugin(),
   ]
