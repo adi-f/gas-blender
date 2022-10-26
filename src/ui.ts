@@ -1,4 +1,3 @@
-import { calculate, EanResult, EanSource, EanTank } from "./calcularor";
 import { BlendResult, calculateForRemosEquiptment, COMPRESSOR_OUTPUT_200_BAR_STOPS_AT, DEFAULT_SOURCE_OXYGEN_PERCENTAGE, displayToRealPressureBar } from './remo-calculator';
 import { error, format, isAlmostZero, toInt } from './ui-helper';
 
