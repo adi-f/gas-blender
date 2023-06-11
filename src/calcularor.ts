@@ -16,6 +16,8 @@ export interface EanSource {
     oxygenPercentage: number;
 }
 
+export const CANNOT_GET_CREATED: string = 'CANNOT_GET_CREATED';
+
 interface MixCalculationInput {
     pressureTargetBar: number;
     oxygenPercentageTarget: number;
@@ -48,7 +50,7 @@ export function calculate(tankBefore: EanTank, tankAfter: EanTank, source: EanSo
             return result;
         }
     }
-    throw Error ('CANNOT_GET_CREATED');
+    throw Error (CANNOT_GET_CREATED);
 }
 
 function nothingToDoCase(tankBefore: EanTank, tankAfter: EanTank, source: EanSource): EanResult {

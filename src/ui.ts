@@ -1,4 +1,5 @@
-import { BlendResult, calculateForRemosEquiptment, COMPRESSOR_OUTPUT_200_BAR_STOPS_AT, DEFAULT_SOURCE_OXYGEN_PERCENTAGE, displayToRealPressureBar } from './remo-calculator';
+import { CANNOT_GET_CREATED, EanResult, EanSource, EanTank, calculate } from './calcularor';
+import { COMPRESSOR_OUTPUT_200_BAR_STOPS_AT, DEFAULT_SOURCE_OXYGEN_PERCENTAGE } from './lakeland';
 import { error, format, isAlmostZero, toInt } from './ui-helper';
 
 export function init() {
@@ -9,69 +10,70 @@ export function init() {
   });
 }
 
-function updateTankPressure() {
-  const pressureBarDisplayed = getInputValue('.tankPressureBeforeDesiplayed');
-  const pressureBarDisplayedAsNumber = parseInt(pressureBarDisplayed);
-  const pressureBar = displayToRealPressureBar(pressureBarDisplayedAsNumber);
-  if (Number.isFinite(pressureBarDisplayedAsNumber) && pressureBar >= 0) {
-    setInputValue('.tankPressureBefore', format(pressureBar));
-  } else {
-    setInputValue('.tankPressureBefore', '');
+function doCalculation() {
+
+  const tankBefore: EanTank = {
+      pressureBar: getInputValueParsed('.tankPressureBefore'),
+      oxygenPercentage: getInputValueParsed('.tankOxygenBefore'),
+  };
+
+  const tankAfter: EanTank = {
+      pressureBar: getInputValueParsed('.tankPressureTarget'),
+      oxygenPercentage: getInputValueParsed('.tankOxygenTarget')
+  };
+
+  const source: EanSource = {
+      oxygenPercentage: getInputValueParsed('.sourceOxygen')
+  }
+
+  try {
+    const result: EanResult = calculate(tankBefore, tankAfter, source);
+    displayResultDeleyed(result);
+  } catch (error) {
+    clearResult();
+    showError(errorToString(error));
   }
 }
 
-function doCalculation() {
-  const result: BlendResult = calculateForRemosEquiptment({
-    currentPressureTankBarDisplayed: getInputValueParsed('.tankPressureBeforeDesiplayed'),
-    currentOxygenPercentage: getInputValueParsed('.tankOxygenBefore'),
-
-    targetTankPressureBar: getInputValueParsed('.tankPressureTarget'),
-    targetTankOxygenPercentage: getInputValueParsed('.tankOxygenTarget'),
-
-    sourceTankOgygenPercentage: getInputValueParsed('.sourceOxygen')
-  });
-
-  displayResultDeleyed(result);
-}
-
-function displayResultDeleyed(result: BlendResult) {
-  displayResult({
-    releaseBar: 0,
-    releaseBarTo: 0,
-    releaseBarToDisplayBooster: 0,
-    addBarSource: 0,
-    addBarSourceToDisplayBooster: 0,
-    addBarAir: 0,
-    addBarAirTo: 0,
-    addBarAirToDisplayCompressor: 0
-  });
+function displayResultDeleyed(result: EanResult) {
+  clearResult();
   setTimeout(() => {
     displayResult(result);
   }, 300);
 }
 
-function displayResult(result: BlendResult) {
+function displayResult(result: EanResult) {
   const needToReleseGas = !isAlmostZero(result.releaseBar);
   setVisibility('.release', needToReleseGas);
   setInputValue('.releaseFromTank', '-' + format(result.releaseBar) + ' bar');
-  setInputValue('.releaseFromTankTo', format(result.releaseBarToDisplayBooster) + ' bar');
+  setInputValue('.releaseFromTankTo', format(result.releaseBarToTarget) + ' bar');
 
-  const needToBoost = !isAlmostZero(result.addBarSource);
+  const needToBoost = !isAlmostZero(result.addBarEanSource);
   setVisibility('.booster', needToBoost);
-  setInputValue('.addFromSource', '+' + format(result.addBarSource) + ' bar');
-  setInputValue('.addFromSourceTo', format(result.addBarSourceToDisplayBooster) + ' bar');
+  setInputValue('.addFromSource', '+' + format(result.addBarEanSource) + ' bar');
+  setInputValue('.addFromSourceTo', format(result.addBarEanSourceToTarget) + ' bar');
 
   const needCompressor = !isAlmostZero(result.addBarAir);
   setVisibility('.compressor', needCompressor);
   setInputValue('.addAir', '+' + format(result.addBarAir) + ' bar');
-  setInputValue('.addAirTo', format(result.addBarAirToDisplayCompressor) + ' bar');
+  setInputValue('.addAirTo', format(result.addBarAirToTarget) + ' bar');
 
   hideError();
 }
 
+function clearResult() {
+  displayResult({
+    releaseBar: 0,
+    releaseBarToTarget: 0,
+    addBarEanSource: 0,
+    addBarEanSourceToTarget: 0,
+    addBarAir: 0,
+    addBarAirToTarget: 0
+  });
+}
+
 function registerListerners() {
   addListener('.calc', 'click', doCalculation);
-  addListener('.tankPressureBeforeDesiplayed', 'input', updateTankPressure)
 }
 
 function setDefaults() {
@@ -102,6 +104,14 @@ function addListener(selector: string, eventType: string, action: () => void) {
 function setVisibility(selector: string, visible: boolean) {
   const visibility = visible ? 'inherit' : 'hidden'
   document.querySelectorAll(selector).forEach((element: HTMLElement) => element.style.visibility = visibility)
+}
+
+function errorToString(error: any): string {
+  let message = error?.message || String(error);
+  if(message === CANNOT_GET_CREATED) {
+    message = 'Zielgas nicht herstellbar';
+  }
+  return message;
 }
 
 function showError(message: string) {

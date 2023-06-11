@@ -1,0 +1,2 @@
+export const DEFAULT_SOURCE_OXYGEN_PERCENTAGE: number = 100;
+export const COMPRESSOR_OUTPUT_200_BAR_STOPS_AT: number = 225;
